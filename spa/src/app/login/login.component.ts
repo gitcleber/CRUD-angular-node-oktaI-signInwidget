@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { OKTA_AUTH } from '@okta/okta-angular';
-import { OktaAuth } from '@okta/okta-auth-js';
-import { OktaAuthStateService } from '@okta/okta-angular';
+import { OktaAuth, Token, Tokens } from '@okta/okta-auth-js';
 import OktaSignIn from '@okta/okta-signin-widget';
 import appConfig from '../app-config';
 
@@ -24,13 +23,13 @@ export class LoginComponent implements OnInit {
         issuer: appConfig.oidc.issuer,
         scopes: appConfig.oidc.scopes
       },
-      logo: 'assets/angular.svg',
+      logo: 'assets/okta-widget/angular.svg',
       features: {
         registration: true,
       },
       i18n: {
         en: {
-          'primaryauth.title': 'Sign in to Angular & Company',
+          'primaryauth.title': 'Sign in to Dev Class App',
         },
       },
       authClient: oktaAuth,
@@ -39,16 +38,29 @@ export class LoginComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.signIn.renderEl({el: '#okta-sign-in-widget'},
-    (resp:any)=>{
-      if(resp.status === 'SUCCESS'){
-        this.oktaAuth.signInWithRedirect();
+    // this.signIn.renderEl({el: '#okta-sign-in-widget'},
+    // (resp:any)=>{
+    //   if(resp.status === 'SUCCESS'){
+    //     this.oktaAuth.signInWithRedirect();
+    //   }
+    // },
+    // (error:any) => {
+    //   throw error;
+    // });
+    this.signIn.showSignInToGetTokens({
+      el: '#okta-sign-in-widget',
+      scopes: appConfig.oidc.scopes}).then(
+        (tokens: Tokens) =>{
+          //remove the widget
+          this.signIn.remove();
+
+          // In this flow the redirect to Okta occurs in a hidden iframe
+          this.oktaAuth.handleLoginRedirect(tokens);
+        }).catch((err: any) =>{
+          // Typically due to misconfiguration
+          throw err;          
+        });
       }
-    },
-    (error:any) => {
-      throw error;
-    });
-  }
 
   ngOnDestroy() {
     this.signIn.remove();
