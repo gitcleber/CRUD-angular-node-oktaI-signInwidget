@@ -7,12 +7,11 @@ import { ProductsComponent } from './products/products.component';
 import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
-  {path:'', component: HomeComponent},
-  {path: 'products', component: ProductsComponent, canActivate: [OktaAuthGuard]},
+  { path:'', component: HomeComponent},
+  { path: 'products', component: ProductsComponent, canActivate: [OktaAuthGuard]},
   { path: 'login/callback', component: OktaCallbackComponent },
-  {path: 'profile', component: ProfileComponent, canActivate:[OktaAuthGuard]},
-  {path: 'login', component: LoginComponent }
-
+  { path: 'profile', component: ProfileComponent, canActivate:[OktaAuthGuard]},
+  { path: 'login', component: LoginComponent }
 ];
 
 @NgModule({
